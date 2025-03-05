@@ -1,31 +1,26 @@
 import streamlit as st
 import requests
 
+# Use the deployed FastAPI backend URL
+FASTAPI_URL = "https://your-backend.onrender.com"
+
 st.title("🤖 InTTOVATOR AI - Customer Discovery Assistant")
 
-# Create a list to store saved responses
-if "saved_responses" not in st.session_state:
-    st.session_state.saved_responses = []
+st.subheader("💡 Example Questions")
+st.write("- What is the biggest challenge you face in [problem area]?")
+st.write("- Can you describe a recent experience where you encountered this issue?")
+st.write("- How do you currently solve this problem?")
 
-# User input
 question = st.text_input("Enter your question:")
 
 if st.button("Ask AI"):
     if question:
-        response = requests.post("http://127.0.0.1:8000/ask", json={"question": question})
+        response = requests.post(f"{FASTAPI_URL}/ask", json={"question": question})
         if response.status_code == 200:
             answer = response.json().get("response", "No response received.")
             st.write("### 🎯 AI Response:")
             st.success(answer)
-            if st.button("💾 Save Response"):
-                st.session_state.saved_responses.append(answer)
         else:
             st.error("❌ Error: Unable to reach the AI server.")
     else:
         st.warning("⚠️ Please enter a question.")
-
-# Display saved responses
-if st.session_state.saved_responses:
-    st.subheader("📁 Saved Responses")
-    for idx, saved in enumerate(st.session_state.saved_responses):
-        st.write(f"{idx + 1}. {saved}")
